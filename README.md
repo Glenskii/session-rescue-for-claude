@@ -85,6 +85,20 @@ macOS: `~/Library/Application Support/Claude/...` and Linux: `~/.config/Claude/.
 
 Archiving a session sets `"isArchived": true` in its JSON, and the app mirrors that state into its IndexedDB cache (`IndexedDB/https_claude.ai_0.indexeddb.*` under the Claude data folder). At startup the app trusts the cache, so a restore must flip the JSON and force a cache rebuild. Local sessions do not sync to claude.ai: the state is entirely on your machine.
 
+## Screenshots
+
+**Archived sessions, filtered and ready to restore or trash:**
+![Archived filter view](assets/screenshots/archived-filter-view.jpg)
+
+**In-app help panel, opened from the `?` button:**
+![Help modal](assets/screenshots/help-modal.jpg)
+
+**Confirmation banner after a restore, with the real fix front and center:**
+![Restart banner](assets/screenshots/restart-banner.jpg)
+
+**Active sessions across Claude Code and Cowork, side by side:**
+![Active sessions view](assets/screenshots/active-sessions-view.jpg)
+
 ## Claude Code skill
 
 The `skills/session-rescue/` folder contains a skill for Claude Code users. Drop it into your skills directory and Claude can list, restore, and manage sessions conversationally, following the same safety rules (backup before write, trash instead of delete, atomic writes).
