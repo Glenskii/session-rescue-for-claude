@@ -541,7 +541,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 </div>
 
 <div class="restart-banner" id="restart-banner">
-  Changes saved. Fully quit Claude Desktop (including the system tray icon) and relaunch to see them.
+  Changes saved. Fully KILL Claude Desktop (Task Manager > End Task, not just Quit) and relaunch to see them.
 </div>
 
 <div class="session-list" id="session-list"></div>
@@ -777,8 +777,10 @@ function showHelp() {
       <div class="help-body">
         <h3>What this does</h3>
         <p>Claude Desktop has no UI to browse or restore archived sessions. This tool finds every session across both Claude Code and Cowork stores and lets you restore, archive, or trash them safely.</p>
-        <h3>Restoring a session for real</h3>
-        <p>Flipping the archived flag here is not enough on its own: Claude Desktop caches session state in its IndexedDB and trusts that cache at startup. After restoring here, fully quit Claude Desktop (tray icon included) and run <code>rebuild_session_state.ps1</code> from the repo, then relaunch. See the README for the full procedure.</p>
+        <h3>Quit means fully quit</h3>
+        <p>Claude Desktop only writes archived/restored state to disk when the process actually terminates. Closing the window or using tray-icon Quit is not enough. Use Task Manager (End Task) or <code>kill</code>, then relaunch. This alone fixes most cases for sessions you archive or restore through the app's own UI.</p>
+        <h3>Restoring a session stuck here</h3>
+        <p>If a session is still stuck archived after a full kill and relaunch, flipping the flag in this tool is not enough either: Claude Desktop trusts its IndexedDB cache at startup. Fully kill Claude Desktop, run <code>rebuild_session_state.ps1</code> from the repo, then relaunch. See the README for the full procedure.</p>
         <h3>Safety</h3>
         <p>Every write is backed up first (<code>session-rescue-backups</code>). Trash moves sessions to <code>session-rescue-trash</code> instead of deleting them. Writes are atomic, so a crash mid-write cannot corrupt a session file.</p>
         <h3>Filters and search</h3>

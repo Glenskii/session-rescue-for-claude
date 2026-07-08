@@ -7,7 +7,9 @@ description: Manage archived Claude Desktop sessions (Claude Code and Cowork) fr
 
 Claude Desktop stores sessions as `local_*.json` files in two sibling folders. Archiving flips an `isArchived` boolean in the JSON. There is no in-app UI to browse or restore archived sessions, so this skill operates on the files directly.
 
-CRITICAL: on current Claude Desktop builds, flipping the JSON alone does NOT restore a session. The app caches session state in `IndexedDB/https_claude.ai_0.indexeddb.*` under the Claude data folder and trusts the cache at startup. A reliable restore = flip the JSONs while the app is closed, then rename both IndexedDB folders (`.leveldb` and `.blob`) with a `.bak-<timestamp>` suffix so the app rebuilds the cache from the JSONs on relaunch. The bundled `rebuild_session_state.ps1` does all of this on Windows. Never delete the cache folders, always rename.
+FIRST, TRY THE SIMPLE FIX: tell the user to fully KILL the Claude Desktop process (Task Manager > End Task on Windows, `kill`/Force Quit on macOS/Linux) and relaunch. Closing the window or using tray-icon Quit does not reliably flush state. Confirmed by testing: a real process kill followed by relaunch correctly syncs archive and restore actions made through the app's own UI, no file editing needed.
+
+CRITICAL (fallback only): on current Claude Desktop builds, flipping the JSON alone does NOT restore a session that is still stuck archived after a full kill and relaunch. The app caches session state in `IndexedDB/https_claude.ai_0.indexeddb.*` under the Claude data folder and trusts the cache at startup. A reliable restore = flip the JSONs while the app is closed, then rename both IndexedDB folders (`.leveldb` and `.blob`) with a `.bak-<timestamp>` suffix so the app rebuilds the cache from the JSONs on relaunch. The bundled `rebuild_session_state.ps1` does all of this on Windows. Never delete the cache folders, always rename.
 
 ## Session store locations
 
@@ -31,7 +33,7 @@ Layout inside each store: `<account-uuid>/<workspace-uuid>/local_<session-uuid>.
 2. NEVER hard-delete a session. Move it to a `session-rescue-trash` folder inside the same store instead.
 3. Write atomically: write to a temp file, then rename over the original.
 4. Preserve every JSON field. Only change `isArchived`. Do not reformat or drop unknown fields.
-5. Changes only appear after the user fully quits Claude Desktop (including the tray icon) and relaunches. Always tell them this.
+5. Changes only appear after the user fully KILLS the Claude Desktop process (not just closes the window or uses tray Quit) and relaunches. Always tell them this.
 6. Skip the `session-rescue-backups` and `session-rescue-trash` folders when scanning.
 
 ## Workflows

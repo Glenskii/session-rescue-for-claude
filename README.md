@@ -10,9 +10,11 @@ Developed by [Glen E. Grant](https://profile.glenegrant.com).
 
 Claude Desktop lets you archive a session with one click, but there is no UI to see your archived sessions or bring them back. One misclick and your project session vanishes from the sidebar with no recovery path. This tool fixes that.
 
-## Important: the flag flip alone is not enough
+## Important: quit means fully quit
 
-Earlier tools restored sessions by flipping `isArchived` in the session JSON. On current Claude Desktop builds that no longer works: the app caches session state in its IndexedDB and reads the cache at startup, ignoring your JSON edit. This project handles that with `rebuild_session_state.ps1` (Windows), which flips the JSONs and then renames the IndexedDB cache so the app rebuilds it from the files. Rename, not delete: rollback is always possible. See the Restore procedure below.
+Claude Desktop caches session state (including the archived flag) in its IndexedDB and only writes that cache through to the session JSON files when the process actually terminates. Closing the window or using tray-icon Quit does not reliably do this. **Use Task Manager (or `kill`/`pkill` on macOS and Linux) to fully end the process**, then relaunch. Tested and confirmed: a real process kill followed by a relaunch correctly syncs archive and restore actions taken in the app, no extra tooling needed.
+
+If a session is still stuck archived after a full kill and relaunch (this happens to sessions that got desynced under an older build), that is what this tool and `rebuild_session_state.ps1` are for. See the Restore procedure below.
 
 ## What it does
 
@@ -55,9 +57,11 @@ python claude_session_rescue.py --restore-all-archived  # bulk restore, no GUI
 python claude_session_rescue.py --path "D:\custom\dir"  # custom session store
 ```
 
-**Restore procedure (Windows, the reliable path):**
+**Everyday use: just kill and relaunch.** Archive or restore a session from Claude Desktop's own UI, fully kill the process (Task Manager > End Task, not the tray Quit), then relaunch. That is all it takes for normal use.
 
-1. Fully quit Claude Desktop, including the system tray icon
+**Stuck sessions (Windows, the reliable fallback):**
+
+1. Fully kill Claude Desktop via Task Manager
 2. Run:
    ```
    powershell -ExecutionPolicy Bypass -File rebuild_session_state.ps1
@@ -66,7 +70,7 @@ python claude_session_rescue.py --path "D:\custom\dir"  # custom session store
 
 The script refuses to run while the app is open, restores every archived session in the JSON files, and renames the IndexedDB cache folders with a timestamped `.bak` suffix so the app rebuilds from the JSONs. If anything looks wrong afterward, quit the app, delete the fresh IndexedDB folders, and strip the `.bak` suffix to roll back exactly.
 
-On macOS and Linux the same principle applies: quit the app, run `python3 claude_session_rescue.py --restore-all-archived`, then move the `IndexedDB/https_claude.ai_0.indexeddb.leveldb` and `.blob` folders aside before relaunching.
+On macOS and Linux the same principle applies: kill the app process, run `python3 claude_session_rescue.py --restore-all-archived`, then move the `IndexedDB/https_claude.ai_0.indexeddb.leveldb` and `.blob` folders aside before relaunching.
 
 ## How it works
 
