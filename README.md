@@ -87,25 +87,55 @@ Archiving a session sets `"isArchived": true` in its JSON, and the app mirrors t
 
 ## Screenshots
 
-**Archived sessions, filtered and ready to restore or trash:**
-![Archived filter view](assets/screenshots/archived-filter-view.jpg)
+<table>
+<tr>
+<td width="50%" valign="top">
 
-**In-app help panel, opened from the `?` button:**
-![Help modal](assets/screenshots/help-modal.jpg)
+**Archived filter view**
+Sessions found across both stores, ready to restore or trash.
 
-**Confirmation banner after a restore, with the real fix front and center:**
-![Restart banner](assets/screenshots/restart-banner.jpg)
+<img src="assets/screenshots/archived-filter-view.jpg" width="100%">
 
-**Active sessions across Claude Code and Cowork, side by side:**
-![Active sessions view](assets/screenshots/active-sessions-view.jpg)
+</td>
+<td width="50%" valign="top">
+
+**In-app help panel**
+Opened from the `?` button, with the real fix and safety model.
+
+<img src="assets/screenshots/help-modal.jpg" width="100%">
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**Restore confirmation banner**
+The full-kill fix, front and center, right after a restore.
+
+<img src="assets/screenshots/restart-banner.jpg" width="100%">
+
+</td>
+<td width="50%" valign="top">
+
+**Active sessions, Code and Cowork together**
+Everything unarchived, side by side, filterable by store.
+
+<img src="assets/screenshots/active-sessions-view.jpg" width="100%">
+
+</td>
+</tr>
+</table>
 
 ## Claude Code skill
 
 The `skills/session-rescue/` folder contains a skill for Claude Code users. Drop it into your skills directory and Claude can list, restore, and manage sessions conversationally, following the same safety rules (backup before write, trash instead of delete, atomic writes).
 
-## Credits
+## Contributors
 
-The core restore mechanism (the `isArchived` flag flip) was first documented by [SugaCrypto's cowork-archive-manager](https://github.com/SugaCrypto/cowork-archive-manager), which handles the Cowork store. This project extends the idea to Claude Code sessions and adds the safety layer, search, grouping, orphan detection, and CLI modes.
+1. **[Glen E. Grant](https://profile.glenegrant.com)** ([@Glenskii](https://github.com/Glenskii)) — creator and maintainer
+2. **[SugaCrypto](https://github.com/SugaCrypto)** — original author of [cowork-archive-manager](https://github.com/SugaCrypto/cowork-archive-manager), the source of the `isArchived` flag-flip mechanism this project builds on and extends to Claude Code sessions
+
+Contributions welcome. Open an issue or PR.
 
 ## License
 
