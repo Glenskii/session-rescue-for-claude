@@ -47,6 +47,11 @@ import threading
 import time
 import webbrowser
 from datetime import datetime
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # Python 3.8 has no zoneinfo; fall back to local time
+    ZoneInfo = None
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse
@@ -73,6 +78,22 @@ BACKUP_DIR_NAME = "session-rescue-backups"
 TRASH_DIR_NAME = "session-rescue-trash"
 
 custom_sessions_path = None  # set via --path
+
+
+def get_build_timestamp():
+    """Last-modified time of this script, shown in the help panel as a freshness signal."""
+    try:
+        mtime = os.path.getmtime(__file__)
+    except OSError:
+        return "unknown"
+    if ZoneInfo is not None:
+        try:
+            dt = datetime.fromtimestamp(mtime, tz=ZoneInfo("America/New_York"))
+            return dt.strftime("%Y-%m-%d %I:%M %p ET")
+        except Exception:
+            pass
+    dt = datetime.fromtimestamp(mtime)
+    return dt.strftime("%Y-%m-%d %I:%M %p (local time)")
 
 
 # ============================================================
@@ -405,10 +426,13 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; }
-  .header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .header { padding: 18px 32px; display: flex; align-items: flex-start; justify-content: space-between; position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
   .header h1 { font-size: 18px; font-weight: 600; }
   .header-version { font-size: 14px; color: var(--text3); margin-left: 6px; }
+  .header-byline { font-size: 14px; color: var(--text2); margin-top: 4px; }
+  .header-byline span { color: var(--accent); font-weight: 600; }
   .header-actions { display: flex; gap: 8px; }
+  .btn-icon { width: 34px; height: 34px; padding: 0; justify-content: center; font-size: 16px; font-weight: 700; }
   .btn { padding: 8px 15px; border: none; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.15s; display: inline-flex; align-items: center; gap: 6px; }
   .btn:hover { transform: translateY(-1px); }
   .btn-accent { background: var(--accent); color: white; }
@@ -459,13 +483,27 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .empty-state code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 14px; }
   .restart-banner { margin: 0 32px 8px; padding: 12px 18px; border-radius: var(--radius); background: var(--amber-soft); color: var(--amber); font-size: 14px; font-weight: 500; display: none; }
   .restart-banner.show { display: block; }
+  .help-modal { max-width: 620px; }
+  .help-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .help-topline .app-name { font-size: 17px; font-weight: 700; }
+  .help-topline .credit { font-size: 14px; color: var(--text2); }
+  .help-topline .credit span { color: var(--accent); font-weight: 600; }
+  .help-body { font-size: 14px; color: var(--text); line-height: 1.7; max-height: 50vh; overflow-y: auto; }
+  .help-body h3 { font-size: 15px; margin: 16px 0 6px; color: var(--text); }
+  .help-body h3:first-child { margin-top: 0; }
+  .help-body code { background: var(--surface3); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 13px; }
+  .help-footer { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text3); }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div><h1>Session Rescue for Claude <span class="header-version">v__VERSION__</span></h1></div>
+  <div>
+    <h1>Session Rescue for Claude <span class="header-version">v__VERSION__</span></h1>
+    <div class="header-byline">Developed By: <span>Glen E. Grant</span></div>
+  </div>
   <div class="header-actions">
+    <button class="btn btn-ghost btn-icon" onclick="showHelp()" title="Help / operational guide" aria-label="Help">?</button>
     <button class="btn btn-ghost" onclick="checkOrphans()">Check Orphans</button>
     <button class="btn btn-ghost" onclick="openFolder()">Open Folder</button>
     <button class="btn btn-accent" onclick="refresh()">Refresh</button>
@@ -725,11 +763,40 @@ async function checkOrphans() {
 
 async function openFolder() { await api('open_folder'); }
 
+function showHelp() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal help-modal">
+      <div class="help-topline">
+        <span class="app-name">Session Rescue for Claude</span>
+        <span class="credit">Developed By: <span>Glen E. Grant</span></span>
+      </div>
+      <div class="help-body">
+        <h3>What this does</h3>
+        <p>Claude Desktop has no UI to browse or restore archived sessions. This tool finds every session across both Claude Code and Cowork stores and lets you restore, archive, or trash them safely.</p>
+        <h3>Restoring a session for real</h3>
+        <p>Flipping the archived flag here is not enough on its own: Claude Desktop caches session state in its IndexedDB and trusts that cache at startup. After restoring here, fully quit Claude Desktop (tray icon included) and run <code>rebuild_session_state.ps1</code> from the repo, then relaunch. See the README for the full procedure.</p>
+        <h3>Safety</h3>
+        <p>Every write is backed up first (<code>session-rescue-backups</code>). Trash moves sessions to <code>session-rescue-trash</code> instead of deleting them. Writes are atomic, so a crash mid-write cannot corrupt a session file.</p>
+        <h3>Filters and search</h3>
+        <p>Use the top filter bar to isolate Archived, Active, Code, or Cowork sessions. Search matches title and project folder. "Group by project" clusters sessions by their <code>cwd</code>.</p>
+      </div>
+      <div class="help-footer">Last updated: __BUILD_TIMESTAMP__</div>
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="btn btn-accent" id="help-close">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#help-close').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+}
+
 refresh();
 </script>
 </body>
 </html>
-""".replace("__VERSION__", VERSION)
+""".replace("__VERSION__", VERSION).replace("__BUILD_TIMESTAMP__", get_build_timestamp())
 
 
 class Handler(BaseHTTPRequestHandler):
