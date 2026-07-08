@@ -430,6 +430,8 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .header h1 { font-size: 18px; font-weight: 600; }
   .header-version { font-size: 14px; color: var(--text3); margin-left: 6px; }
   .header-byline { font-size: 14px; color: var(--text2); margin-top: 4px; }
+  .header-byline a, .credit a { text-decoration: none; }
+  .header-byline a:hover span, .credit a:hover span { text-decoration: underline; }
   .header-byline span { color: var(--accent); font-weight: 600; }
   .header-actions { display: flex; gap: 8px; }
   .btn-icon { width: 34px; height: 34px; padding: 0; justify-content: center; font-size: 16px; font-weight: 700; }
@@ -500,7 +502,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <div class="header">
   <div>
     <h1>Session Rescue for Claude <span class="header-version">v__VERSION__</span></h1>
-    <div class="header-byline">Developed By: <span>Glen E. Grant</span></div>
+    <div class="header-byline">Developed By: <a href="https://profile.glenegrant.com" target="_blank" rel="noopener noreferrer"><span>Glen E. Grant</span></a></div>
   </div>
   <div class="header-actions">
     <button class="btn btn-ghost btn-icon" onclick="showHelp()" title="Help / operational guide" aria-label="Help">?</button>
@@ -770,7 +772,7 @@ function showHelp() {
     <div class="modal help-modal">
       <div class="help-topline">
         <span class="app-name">Session Rescue for Claude</span>
-        <span class="credit">Developed By: <span>Glen E. Grant</span></span>
+        <span class="credit">Developed By: <a href="https://profile.glenegrant.com" target="_blank" rel="noopener noreferrer"><span>Glen E. Grant</span></a></span>
       </div>
       <div class="help-body">
         <h3>What this does</h3>

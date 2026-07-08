@@ -2,6 +2,8 @@
 
 Restore, browse, and manage archived Claude Desktop sessions. Works with both **Claude Code** and **Cowork** session stores.
 
+Developed by [Glen E. Grant](https://profile.glenegrant.com).
+
 ![Session Rescue for Claude](assets/og-card.png)
 
 ## The problem
