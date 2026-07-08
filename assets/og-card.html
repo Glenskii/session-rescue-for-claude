@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG Card: Session Rescue for Claude</title>
+<style>
+  /* ============================================================
+     OG / Twitter share card: 1200 x 630, white background
+     Typography floor: nothing below 22px (rendered visual rule)
+     ============================================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #ffffff;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    color: #0A0A0A;
+    display: flex;
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---- Left column: text content ---- */
+  .content {
+    width: 720px;
+    padding: 52px 24px 44px 72px;
+    display: flex;
+    flex-direction: column;
+  }
+  .repo-link {
+    font-family: Consolas, monospace;
+    font-size: 24px;
+    color: #E85D04;
+    font-weight: 600;
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: 'Arial Narrow', 'Segoe UI', sans-serif;
+    font-size: 76px;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -1px;
+    color: #0A0A0A;
+  }
+  h1 .accent { color: #E85D04; }
+  .byline {
+    font-size: 26px;
+    font-weight: 600;
+    color: #333333;
+    margin-top: 18px;
+  }
+  .byline span { color: #E85D04; }
+  .tagline {
+    font-size: 30px;
+    color: #444444;
+    margin-top: 14px;
+  }
+  .rule {
+    width: 200px;
+    height: 5px;
+    background: #E85D04;
+    margin: 22px 0 24px;
+  }
+  .tags { display: flex; gap: 12px; margin-bottom: 30px; }
+  .tag {
+    font-family: Consolas, monospace;
+    font-size: 23px;
+    font-weight: 600;
+    color: #E85D04;
+    border: 2px solid #E85D04;
+    border-radius: 7px;
+    padding: 7px 16px;
+    background: #fff7f2;
+  }
+  .features {
+    font-size: 25px;
+    color: #333333;
+    line-height: 1.55;
+  }
+  .footer {
+    margin-top: auto;
+    padding-top: 22px;
+    border-top: 1px solid #dddddd;
+    font-family: Consolas, monospace;
+    font-size: 23px;
+    color: #555555;
+  }
+
+  /* ---- Right column: logo panel ---- */
+  .brand {
+    width: 480px;
+    height: 630px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    border-left: 2px solid #f0e6df;
+    background: #fffdfb;
+  }
+  .logo-ring {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    box-shadow: 0 0 0 6px #ffffff, 0 0 0 10px #E85D04, 0 18px 50px rgba(232, 93, 4, 0.28);
+  }
+  .logo-ring img {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .gh-url {
+    font-family: Consolas, monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0A0A0A;
+  }
+</style>
+</head>
+<body>
+
+<div class="content">
+  <div class="repo-link">github.com/Glenskii/session-rescue-for-claude</div>
+  <h1>Session Rescue<br><span class="accent">for Claude</span></h1>
+  <div class="byline">Developed By: <span>Glen E. Grant</span></div>
+  <div class="tagline">Bring archived sessions back from the dead.</div>
+  <div class="rule"></div>
+  <div class="tags">
+    <span class="tag">restore</span>
+    <span class="tag">bulk_ops</span>
+    <span class="tag">code + cowork</span>
+  </div>
+  <div class="features">
+    Zero dependencies. &nbsp;Auto-backups. &nbsp;Trash, never delete.<br>
+    Browser GUI. &nbsp;Headless CLI. &nbsp;Claude Code skill included.
+  </div>
+  <div class="footer">Glen E. Grant &nbsp;&middot;&nbsp; glenegrant.com</div>
+</div>
+
+<div class="brand">
+  <div class="logo-ring"><img src="glenski-logo.png" alt="Glenski logo"></div>
+  <div class="gh-url">https://github.com/Glenskii</div>
+</div>
+
+</body>
+</html>
