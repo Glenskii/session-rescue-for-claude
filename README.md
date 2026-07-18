@@ -8,7 +8,7 @@ Developed by [Glen E. Grant](https://profile.glenegrant.com).
 
 ## The problem
 
-Claude Desktop lets you archive a session with one click, but there is no UI to see your archived sessions or bring them back. One misclick and your project session vanishes from the sidebar with no recovery path. This tool fixes that.
+Claude Desktop lets you archive a session with one click, but there is no UI to see your archived sessions or bring them back. One misclick and your project session vanishes from the sidebar with no recovery path. This tool fixes that. Jump straight to the [recovery workflow](#recovery-workflow) if you need a session back right now.
 
 ## Important: quit means fully quit
 
@@ -24,6 +24,41 @@ If a session is still stuck archived after a full kill and relaunch (this happen
 - Search by title or project folder, filter by store or status, group by project
 - Detects orphans: transcript folders missing their JSON, and vice versa
 - Headless CLI modes for scripting
+
+## Recovery workflow
+
+Start to finish, for the person who just realized a session is gone.
+
+**1. Confirm it is actually archived, not deleted.**
+```
+python claude_session_rescue.py --list
+```
+If the title shows up tagged `[ARCHIVED]`, it is recoverable. Nothing in normal use ever hard-deletes a session, only this tool's Trash action does, and even that moves it to a recoverable folder rather than removing it.
+
+**2. Try the simple fix first.**
+Fully kill Claude Desktop (Task Manager > End Task, or `kill`/`pkill`, never just the window close or tray Quit) and relaunch. If you archived or restored the session through the app's own sidebar, this alone fixes it. Check the sidebar before doing anything else.
+
+**3. Still missing? Open the tool and restore it.**
+```
+python claude_session_rescue.py
+```
+Filter to **Archived**, find the session, click **Restore** (or **Restore All Archived** for a bulk cleanup). This flips the flag on disk with an automatic backup taken first.
+
+**4. Fully kill and relaunch again.**
+The restore only takes effect once the app re-reads the session files from a cold start. This is the step people skip, and the reason a restore can look like it "did not work."
+
+**5. Still stuck? Force a full cache rebuild.**
+This covers sessions that got desynced under an older Claude Desktop build, where the app's IndexedDB cache and the session JSON files disagree even after a full kill and relaunch.
+```
+powershell -ExecutionPolicy Bypass -File rebuild_session_state.ps1
+```
+Then relaunch once more. See the Restore procedure below for exactly what this script does and how to roll it back.
+
+**6. Verify.**
+```
+python claude_session_rescue.py --list
+```
+The session should now show active, with no `[ARCHIVED]` tag.
 
 ## Safety first
 
