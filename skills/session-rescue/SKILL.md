@@ -29,7 +29,7 @@ Layout inside each store: `<account-uuid>/<workspace-uuid>/local_<session-uuid>.
 
 ## Rules (non-negotiable)
 
-1. ALWAYS back up a session JSON before modifying it. Copy it to a `session-rescue-backups` folder inside the same store, suffixed with a timestamp.
+1. ALWAYS back up a session JSON before modifying it. Copy it to a `session-rescue-backups` folder inside the same store, suffixed with a timestamp. Verify the copy's SHA-256 matches the source before proceeding; abort the write if it does not.
 2. NEVER hard-delete a session. Move it to a `session-rescue-trash` folder inside the same store instead.
 3. Write atomically: write to a temp file, then rename over the original.
 4. Preserve every JSON field. Only change `isArchived`. Do not reformat or drop unknown fields.

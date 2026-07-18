@@ -34,13 +34,14 @@ A second, independent problem: the host app caches session state (including the 
 ## Safety net (non-negotiable, do not water down)
 
 1. **Automatic backup before every write.** Any file the tool is about to modify gets copied first to a `*-backups` folder inside the same store, timestamped. This happens unconditionally, not as an opt-in flag.
-2. **Trash, not delete.** The tool's "delete" action never actually deletes. It moves the session file and its transcript folder into a `*-trash` folder inside the same store. Recoverable by moving it back, indefinitely, until the user manually empties it themselves.
-3. **Atomic writes.** Every write goes to a temp file first, then an OS-level rename over the target. A crash or power loss mid-write cannot leave a half-written, corrupted session file.
-4. **Field preservation.** Only the specific flag being changed is touched. Every other field in the session's metadata round-trips untouched — no reformatting, no dropped unknown fields, no silent schema migration.
-5. **Path validation before any write.** Every write path is checked to confirm it resolves inside a discovered, legitimate session store before the tool touches it. No writing outside the known store boundaries, ever.
-6. **Refuses to run destructively while the host app is live**, where applicable (the cache-rebuild fallback script explicitly checks the host process is not running before proceeding).
-7. **Cache-desync fallback is reversible, not destructive.** When a deeper fix is needed (forcing a stale local cache to rebuild from the on-disk files), the fix renames the cache folders with a timestamped suffix rather than deleting them. Full rollback is always one rename away.
-8. **No network calls, no telemetry, no external dependencies.** Standard library only, everything stays on the local machine. Nothing to audit for data exfiltration because there is no outbound path.
+2. **Hash-verified backups.** The backup copy is SHA-256 checked against the source immediately after copying. A mismatch aborts the write rather than silently proceeding with an unverified backup. A hash sidecar is kept for later re-verification.
+3. **Trash, not delete.** The tool's "delete" action never actually deletes. It moves the session file and its transcript folder into a `*-trash` folder inside the same store. Recoverable by moving it back, indefinitely, until the user manually empties it themselves.
+4. **Atomic writes.** Every write goes to a temp file first, then an OS-level rename over the target. A crash or power loss mid-write cannot leave a half-written, corrupted session file.
+5. **Field preservation.** Only the specific flag being changed is touched. Every other field in the session's metadata round-trips untouched — no reformatting, no dropped unknown fields, no silent schema migration.
+6. **Path validation before any write.** Every write path is checked to confirm it resolves inside a discovered, legitimate session store before the tool touches it. No writing outside the known store boundaries, ever.
+7. **Refuses to run destructively while the host app is live**, where applicable (the cache-rebuild fallback script explicitly checks the host process is not running before proceeding).
+8. **Cache-desync fallback is reversible, not destructive.** When a deeper fix is needed (forcing a stale local cache to rebuild from the on-disk files), the fix renames the cache folders with a timestamped suffix rather than deleting them. Full rollback is always one rename away.
+9. **No network calls, no telemetry, no external dependencies.** Standard library only, everything stays on the local machine. Nothing to audit for data exfiltration because there is no outbound path.
 
 ## Documentation shape that matters
 
@@ -58,3 +59,4 @@ Everything above is store-agnostic except the concrete paths and schema. To port
 3. Confirm whether that agent's app also caches state in a layer separate from the on-disk files (a local database, an IndexedDB-equivalent, a SQLite file) that would need the same "does a plain flag flip actually take effect" testing this project did. Do not assume it is a simple flag flip until verified by a real before/after diff test.
 4. Confirm what "fully quit" actually means for that specific app (window close vs. tray quit vs. process kill can all behave differently) before writing that into the docs as fact.
 5. Reuse the safety net wholesale. It is not specific to Claude Desktop's schema.
+6. **Check for a native protocol/IPC API before defaulting to file editing.** Some agent CLIs expose a proper app-server protocol with archive/restore verbs (Codex's `thread/archive`/`thread/unarchive` is one). If one exists, use it instead of touching files directly. If it does not, confirm that by actually checking the CLI's command surface, not by assuming file editing is the only option because a prior-art tool did it that way first.

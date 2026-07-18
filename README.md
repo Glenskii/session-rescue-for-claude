@@ -2,7 +2,7 @@
 
 Restore, browse, and manage archived Claude Desktop sessions. Works with both **Claude Code** and **Cowork** session stores.
 
-Developed by [Glen E. Grant](https://profile.glenegrant.com).
+Developed by [Glen E. Grant](https://profile.glenegrant.com). See [VERIFICATION.md](VERIFICATION.md) for exactly what was tested and how, not just what's claimed.
 
 ![Session Rescue for Claude](assets/og-card.png)
 
@@ -65,6 +65,7 @@ The session should now show active, with no `[ARCHIVED]` tag.
 This tool never destroys data:
 
 - **Automatic backups.** Every write is preceded by a timestamped copy in a `session-rescue-backups` folder inside the session store.
+- **Hash-verified backups.** Every backup is SHA-256 checked against its source right after copying. A mismatch aborts the operation instead of silently proceeding with a bad backup. A `.sha256` sidecar is kept alongside each backup so it can be re-verified later, surfaced through the **Integrity Check** button.
 - **Trash, not delete.** Removing a session moves it to a `session-rescue-trash` folder. Recover it any time by moving it back.
 - **Atomic writes.** Files are written to a temp file and renamed into place. A crash mid-write cannot corrupt a session.
 - **Field preservation.** Only the `isArchived` flag is changed. Every other field round-trips untouched.

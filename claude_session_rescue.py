@@ -35,6 +35,7 @@ License: MIT
 """
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -228,12 +229,32 @@ def _rescue_dir(session_json_path, kind):
     return target
 
 
+def sha256_of_file(path):
+    """SHA-256 of a file's contents, read in chunks so large transcripts don't balloon memory."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def backup_session_file(json_path):
-    """Copy the session JSON to the backup folder with a timestamp. Returns backup path."""
+    """Copy the session JSON to the backup folder with a timestamp, verified byte-for-byte.
+
+    Raises OSError if the copy does not hash-match the source, so a silently
+    corrupted backup can never be mistaken for a good one. Returns backup path.
+    """
     src = Path(json_path)
+    src_hash = sha256_of_file(src)
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    dest = _rescue_dir(src, BACKUP_DIR_NAME) / f"{src.stem}.{stamp}.json"
+    backup_dir = _rescue_dir(src, BACKUP_DIR_NAME)
+    dest = backup_dir / f"{src.stem}.{stamp}.json"
     shutil.copy2(src, dest)
+    dest_hash = sha256_of_file(dest)
+    if dest_hash != src_hash:
+        dest.unlink(missing_ok=True)
+        raise OSError(f"Backup verification failed for {src.name}: hash mismatch after copy")
+    (backup_dir / f"{dest.name}.sha256").write_text(dest_hash, encoding="utf-8")
     return dest
 
 
@@ -342,6 +363,29 @@ def find_orphans():
                 if d.startswith("local_") and not (Path(root) / f"{d}.json").exists():
                     orphan_dirs.append(str(Path(root) / d))
     return {"transcript_without_json": orphan_dirs, "json_without_transcript": orphan_jsons}
+
+
+def verify_backup_integrity():
+    """Check every backup's sidecar SHA-256 against its current file contents.
+
+    Backups made before this check existed have no sidecar and are skipped,
+    not flagged: absence of a hash is not evidence of corruption.
+    """
+    bases, _ = find_sessions_dirs()
+    corrupted, checked = [], 0
+    for _, base in bases:
+        backup_dir = base / BACKUP_DIR_NAME
+        if not backup_dir.exists():
+            continue
+        for f in backup_dir.glob("*.json"):
+            sidecar = backup_dir / f"{f.name}.sha256"
+            if not sidecar.exists():
+                continue
+            checked += 1
+            expected = sidecar.read_text(encoding="utf-8").strip()
+            if sha256_of_file(f) != expected:
+                corrupted.append(str(f))
+    return {"backups_checked": checked, "corrupted_backups": corrupted}
 
 
 # ============================================================
@@ -506,7 +550,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   </div>
   <div class="header-actions">
     <button class="btn btn-ghost btn-icon" onclick="showHelp()" title="Help / operational guide" aria-label="Help">?</button>
-    <button class="btn btn-ghost" onclick="checkOrphans()">Check Orphans</button>
+    <button class="btn btn-ghost" onclick="checkOrphans()">Integrity Check</button>
     <button class="btn btn-ghost" onclick="openFolder()">Open Folder</button>
     <button class="btn btn-accent" onclick="refresh()">Refresh</button>
   </div>
@@ -759,8 +803,10 @@ async function checkOrphans() {
   const res = await api('orphans');
   const nd = (res.transcript_without_json || []).length;
   const nj = (res.json_without_transcript || []).length;
-  if (nd + nj === 0) { showToast('No orphans found. All sessions are consistent.', 'success'); return; }
-  showModal('Orphan Report', `Transcript folders missing their JSON: <strong>${nd}</strong><br>JSON files missing transcripts: <strong>${nj}</strong><br><br>Details printed to the terminal running this tool.`, () => {});
+  const nc = (res.corrupted_backups || []).length;
+  const checked = res.backups_checked || 0;
+  if (nd + nj + nc === 0) { showToast(`No orphans, no corrupted backups. ${checked} backup(s) verified.`, 'success'); return; }
+  showModal('Integrity Report', `Transcript folders missing their JSON: <strong>${nd}</strong><br>JSON files missing transcripts: <strong>${nj}</strong><br>Corrupted backups (of ${checked} checked): <strong>${nc}</strong><br><br>Details printed to the terminal running this tool.`, () => {}, nc > 0);
 }
 
 async function openFolder() { await api('open_folder'); }
@@ -866,8 +912,9 @@ class Handler(BaseHTTPRequestHandler):
 
         elif path == "/api/orphans":
             result = find_orphans()
+            result.update(verify_backup_integrity())
             for key, items in result.items():
-                if items:
+                if isinstance(items, list) and items:
                     print(f"\n{key}:")
                     for item in items:
                         print(f"  {item}")
