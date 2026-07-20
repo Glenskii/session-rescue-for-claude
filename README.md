@@ -171,8 +171,8 @@ The `skills/session-rescue/` folder contains a skill for Claude Code users. Drop
 
 ## Contributors
 
-1. **[Glen E. Grant](https://profile.glenegrant.com)** ([@Glenskii](https://github.com/Glenskii)) — creator and maintainer
-2. **[SugaCrypto](https://github.com/SugaCrypto)** — original author of [cowork-archive-manager](https://github.com/SugaCrypto/cowork-archive-manager), the source of the `isArchived` flag-flip mechanism this project builds on and extends to Claude Code sessions
+1. **[Glen E. Grant](https://profile.glenegrant.com)** ([@Glenskii](https://github.com/Glenskii)) - creator and maintainer
+2. **[SugaCrypto](https://github.com/SugaCrypto)** - original author of [cowork-archive-manager](https://github.com/SugaCrypto/cowork-archive-manager), the source of the `isArchived` flag-flip mechanism this project builds on and extends to Claude Code sessions
 
 Contributions welcome. Open an issue or PR.
 
