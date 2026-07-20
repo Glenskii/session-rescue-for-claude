@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LinkedIn Banner: Session Rescue (Claude + Codex)</title>
+<style>
+  /* ============================================================
+     LinkedIn shared-post banner: 1200 x 630, white background
+     Typography floor: nothing below 22px (rendered visual rule)
+     ============================================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #ffffff;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    color: #0A0A0A;
+    display: flex;
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---- Left column: text content ---- */
+  .content {
+    width: 760px;
+    padding: 34px 22px 26px 64px;
+    display: flex;
+    flex-direction: column;
+  }
+  .kicker {
+    font-family: Consolas, monospace;
+    font-size: 22px;
+    color: #E85D04;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Arial Narrow', 'Segoe UI', sans-serif;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -1px;
+    color: #0A0A0A;
+  }
+  h1 .accent { color: #E85D04; }
+  .byline {
+    font-size: 23px;
+    font-weight: 600;
+    color: #333333;
+    margin-top: 10px;
+  }
+  .byline span { color: #E85D04; }
+  .rule {
+    width: 180px;
+    height: 4px;
+    background: #E85D04;
+    margin: 14px 0 16px;
+  }
+
+  /* ---- Two tool cards ---- */
+  .tools { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+  .tool-card {
+    border: 2px solid #eee0d6;
+    border-radius: 12px;
+    padding: 13px 20px;
+    background: #fffaf5;
+  }
+  .tool-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+  .tool-badge {
+    font-family: Consolas, monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #E85D04;
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+  .tool-name { font-size: 26px; font-weight: 800; color: #0A0A0A; }
+  .tool-tagline { font-size: 22px; color: #444444; margin-bottom: 4px; }
+  .tool-link { font-family: Consolas, monospace; font-size: 22px; color: #E85D04; font-weight: 600; }
+
+  .features {
+    font-size: 22px;
+    color: #333333;
+    line-height: 1.4;
+  }
+  .footer {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #dddddd;
+    font-family: Consolas, monospace;
+    font-size: 22px;
+    color: #555555;
+  }
+
+  /* ---- Right column: logo panel ---- */
+  .brand {
+    width: 440px;
+    height: 630px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    border-left: 2px solid #f0e6df;
+    background: #fffdfb;
+  }
+  .logo-ring {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    box-shadow: 0 0 0 6px #ffffff, 0 0 0 10px #E85D04, 0 18px 50px rgba(232, 93, 4, 0.28);
+  }
+  .logo-ring img {
+    width: 262px;
+    height: 262px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .gh-url {
+    font-family: Consolas, monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0A0A0A;
+  }
+</style>
+</head>
+<body>
+
+<div class="content">
+  <div class="kicker">github.com/Glenskii</div>
+  <h1>Session Rescue <span class="accent">Suite</span></h1>
+  <div class="byline">Developed By: <span>Glen E. Grant</span></div>
+  <div class="rule"></div>
+
+  <div class="tools">
+    <div class="tool-card">
+      <div class="tool-head">
+        <span class="tool-badge">CLAUDE</span>
+        <span class="tool-name">Session Rescue for Claude</span>
+      </div>
+      <div class="tool-tagline">Bring archived sessions back from the dead.</div>
+      <div class="tool-link">github.com/Glenskii/session-rescue-for-claude</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-head">
+        <span class="tool-badge">CODEX</span>
+        <span class="tool-name">Session Rescue for Codex</span>
+      </div>
+      <div class="tool-tagline">Find the exact task, restore it, verified.</div>
+      <div class="tool-link">github.com/Glenskii/session-rescue-for-codex</div>
+    </div>
+  </div>
+
+  <div class="features">
+    Free. Open source. Zero dependencies.<br>
+    Auto-backups, hash-verified. Trash, never delete.
+  </div>
+  <div class="footer">Glen E. Grant &nbsp;&middot;&nbsp; glenegrant.com</div>
+</div>
+
+<div class="brand">
+  <div class="logo-ring"><img src="glenski-logo.png" alt="Glenski logo"></div>
+  <div class="gh-url">https://github.com/Glenskii</div>
+</div>
+
+</body>
+</html>
