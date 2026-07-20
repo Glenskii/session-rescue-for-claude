@@ -6,6 +6,9 @@ Developed by [Glen E. Grant](https://profile.glenegrant.com). See [VERIFICATION.
 
 ![Session Rescue for Claude](assets/og-card.png)
 
+> [!TIP]
+> **If this brings back a session you thought was gone, leave a star.** It costs one click and it is the only signal that tells me to keep maintaining it: [star this repo](https://github.com/Glenskii/session-rescue-for-claude/stargazers).
+
 ## The problem
 
 Claude Desktop lets you archive a session with one click, but there is no UI to see your archived sessions or bring them back. One misclick and your project session vanishes from the sidebar with no recovery path. This tool fixes that. Jump straight to the [recovery workflow](#recovery-workflow) if you need a session back right now.
