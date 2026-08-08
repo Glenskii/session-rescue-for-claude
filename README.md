@@ -2,6 +2,9 @@
 
 Restore, browse, and manage archived Claude Desktop sessions. Works with both **Claude Code** and **Cowork** session stores.
 
+> [!NOTE]
+> This project is also maintained within the [LLM Ops Toolkit](https://github.com/Glenskii/llm-ops-toolkit), alongside Session Rescue for Codex and the operating process starter kit. This standalone repository remains available for existing links, releases, and direct use.
+
 Developed by [Glen E. Grant](https://profile.glenegrant.com). See [VERIFICATION.md](VERIFICATION.md) for exactly what was tested and how, not just what's claimed.
 
 ![Session Rescue for Claude](assets/og-card.png)
